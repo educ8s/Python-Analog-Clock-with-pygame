@@ -4,6 +4,7 @@ import pygame.gfxdraw
 
 dark_grey = (45, 45, 45)
 light_grey = (229, 229, 229)
+white = (255, 255, 255)
 
 class AnalogClock:
 	def __init__(self, position, size, screen_width, screen_height):
@@ -37,17 +38,20 @@ class AnalogClock:
 		pygame.gfxdraw.aacircle(surface, self.position[0], self.position[1], self.size, dark_grey)
 		pygame.gfxdraw.filled_circle(surface, self.position[0], self.position[1], self.size, dark_grey)
 
-		pygame.gfxdraw.aacircle(surface, self.position[0], self.position[1], self.size - 23, light_grey)
-		pygame.gfxdraw.filled_circle(surface, self.position[0], self.position[1], self.size - 23, light_grey)
+		pygame.gfxdraw.aacircle(surface, self.position[0], self.position[1], self.size - 30, light_grey)
+		pygame.gfxdraw.filled_circle(surface, self.position[0], self.position[1], self.size - 30, light_grey)
+
+		pygame.gfxdraw.aacircle(surface, self.position[0], self.position[1], self.size - 40, white)
+		pygame.gfxdraw.filled_circle(surface, self.position[0], self.position[1], self.size - 40, white)
 
 		num_ticks = 12  
 		tick_length = self.size
 
 		for i in range(num_ticks):
-			angle = (i / num_ticks) * 360  # Calculate angle in degrees
-			angle_rad = math.radians(angle)  # Convert angle to radians
-			start_radius = self.size -5  # Start near the edge of the middle circle
-			end_radius = start_radius - tick_length  # End slightly closer to the center
+			angle = (i / num_ticks) * 360  
+			angle_rad = math.radians(angle) 
+			start_radius = self.size -5  
+			end_radius = start_radius - tick_length
 
 			start_x = self.position[0] + start_radius * math.cos(angle_rad)
 			start_y = self.position[1] + start_radius * math.sin(angle_rad)
@@ -56,8 +60,8 @@ class AnalogClock:
 
 			pygame.draw.line(surface, dark_grey, (start_x, start_y), (end_x, end_y), 10)
 
-		pygame.gfxdraw.aacircle(surface, self.position[0], self.position[1], self.size - 50, light_grey)
-		pygame.gfxdraw.filled_circle(surface, self.position[0], self.position[1], self.size - 50, light_grey)
+		pygame.gfxdraw.aacircle(surface, self.position[0], self.position[1], self.size - 60, white)
+		pygame.gfxdraw.filled_circle(surface, self.position[0], self.position[1], self.size - 60, white)
 
 	def _get_current_time(self):
 		current_time = datetime.now()
