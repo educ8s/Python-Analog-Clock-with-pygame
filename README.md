@@ -63,13 +63,6 @@ This project is divided into 8 steps:
 - Python 3.x
 - Pygame
 
-## Screenshots
-
-<p align="center">
-  <img src="screenshot1.png" alt="Clock Face">
-  <img src="screenshot2.png" alt="Clock Hands in Action">
-</p>
-
 ## Contributing
 
 Contributions are welcome! If you have ideas for improvements or additional features, feel free to open an issue or submit a pull request.
