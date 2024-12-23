@@ -32,7 +32,7 @@ In this tutorial, we build a beautiful analog clock from scratch using Python an
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/analog-clock-pygame.git
+   git clone https://github.com/educ8s/analog-clock-pygame.git
    cd analog-clock-pygame
    ```
 
