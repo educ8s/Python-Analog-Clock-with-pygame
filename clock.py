@@ -1,78 +1,82 @@
-import pygame, math
+import pygame
+import pygame.gfxdraw
 from datetime import datetime
-import pygame.gfxdraw 
 
-dark_grey = (45, 45, 45)
-light_grey = (229, 229, 229)
-white = (255, 255, 255)
+DARK_GREY = (45, 45, 45)
+LIGHT_GREY = (229, 229, 229)
+WHITE = (255, 255, 255)
 
 class AnalogClock:
-	def __init__(self, position, size, screen_width, screen_height):
-		self.position = position
-		self.size = size
-		self._screen_width = screen_width
-		self._screen_height = screen_height
-		self._minute = 0
-		self._hour = 0
-		self._second = 0
-		self._rotation_surface = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
+	def __init__(self, size, position, window_width, window_height):
+		self.__size = size
+		self.__position = position
+		self.__rotation_surface = pygame.Surface((window_width, window_height), pygame.SRCALPHA)
+		self.__hour = 0
+		self.__minute = 0
+		self.__second = 0
 
 	def update(self):
-		time = self._get_current_time()
-		self._minute = time[1]
-		self._hour = time[0]
-		self._second = time[2]
+		now = datetime.now()
+		self.__hour = now.hour % 12
+		self.__minute = now.minute
+		self.__second = now.second
 
-	def draw(self, surface):
-		self._draw_face(surface)
-		self._draw_hand(surface, 0.7 * self.size, 10, self._minute * 6 - 90, dark_grey)
-		self._draw_hand(surface, 0.6 * self.size, 15, (self._hour + self._minute / 60) * 30 - 90, dark_grey)
-		self._draw_hand(surface, self.size + 10, 5, self._second * 6 - 90, 'red', 50)
-		self.draw_center(surface)
+	def draw(self, window):
+		self.__draw_face(window)
+		self.__draw_hour_marks(window)
+		self.__draw_minute_hand(window, self.__minute)
+		self.__draw_hour_hand(window, self.__hour, self.__minute)
+		self.__draw_second_hand(window, self.__second)
+		self.__draw_circle(window, self.__position, 15, DARK_GREY)
 
-	def draw_center(self, surface):
-		pygame.gfxdraw.aacircle(surface, self.position[0], self.position[1], 15, dark_grey)
-		pygame.gfxdraw.filled_circle(surface, self.position[0], self.position[1], 15, dark_grey)
+	def __draw_circle(self, window, position, size, color):
+		pygame.gfxdraw.aacircle(window, position[0], position[1], size, color)
+		pygame.gfxdraw.filled_circle(window, position[0],position[1], size, color)
 
-	def _draw_face(self, surface):
-		pygame.gfxdraw.aacircle(surface, self.position[0], self.position[1], self.size, dark_grey)
-		pygame.gfxdraw.filled_circle(surface, self.position[0], self.position[1], self.size, dark_grey)
+	def __draw_face(self, window):
+		self.__draw_circle(window, self.__position, self.__size, DARK_GREY)
+		self.__draw_circle(window, self.__position, self.__size - 30, LIGHT_GREY)
+		self.__draw_circle(window, self.__position, self.__size - 40, WHITE)
 
-		pygame.gfxdraw.aacircle(surface, self.position[0], self.position[1], self.size - 30, light_grey)
-		pygame.gfxdraw.filled_circle(surface, self.position[0], self.position[1], self.size - 30, light_grey)
+	def __draw_hour_marks(self, window):
+		rect_width = 10
+		rect_height = self.__size
 
-		pygame.gfxdraw.aacircle(surface, self.position[0], self.position[1], self.size - 40, white)
-		pygame.gfxdraw.filled_circle(surface, self.position[0], self.position[1], self.size - 40, white)
+		rect_x = self.__position[0] - rect_width // 2
+		rect_y = self.__position[1] - rect_height
 
-		num_ticks = 12  
-		tick_length = self.size
+		for i in range(12):
+			self.__rotation_surface.fill((0, 0, 0, 0))
+			pygame.draw.rect(self.__rotation_surface, DARK_GREY, (rect_x, rect_y, rect_width, rect_height))
+			rotated_surface = pygame.transform.rotate(self.__rotation_surface, 30 * i)
+			rotated_rect = rotated_surface.get_rect(center = self.__position)
+			window.blit(rotated_surface, rotated_rect)
 
-		for i in range(num_ticks):
-			angle = (i / num_ticks) * 360  
-			angle_rad = math.radians(angle) 
-			start_radius = self.size -5  
-			end_radius = start_radius - tick_length
+		self.__draw_circle(window, self.__position, self.__size - 60, WHITE)
 
-			start_x = self.position[0] + start_radius * math.cos(angle_rad)
-			start_y = self.position[1] + start_radius * math.sin(angle_rad)
-			end_x = self.position[0] + end_radius * math.cos(angle_rad)
-			end_y = self.position[1] + end_radius * math.sin(angle_rad)
+	def __draw_minute_hand(self, window, minute):
+		hand_width = 10
+		hand_length = self.__size * 0.7
+		self.__draw_hand(window, hand_width, hand_length, 6*minute, DARK_GREY)
 
-			pygame.draw.line(surface, dark_grey, (start_x, start_y), (end_x, end_y), 10)
+	def __draw_hand(self, window, hand_width, hand_length, angle, color, offset = 0):
+		rect_x = self.__position[0] - hand_width // 2
+		rect_y = self.__position[1] - hand_length + offset
 
-		pygame.gfxdraw.aacircle(surface, self.position[0], self.position[1], self.size - 60, white)
-		pygame.gfxdraw.filled_circle(surface, self.position[0], self.position[1], self.size - 60, white)
+		self.__rotation_surface.fill((0, 0, 0, 0))
+		pygame.draw.rect(self.__rotation_surface, color, (rect_x, rect_y, hand_width, hand_length))
+		rotated_surface = pygame.transform.rotate(self.__rotation_surface, -angle)
+		rotated_rect = rotated_surface.get_rect(center = self.__position)
+		window.blit(rotated_surface, rotated_rect)
 
-	def _get_current_time(self):
-		current_time = datetime.now()
-		hours = current_time.hour % 12 or 12
-		return (hours, current_time.minute, current_time.second)
+	def __draw_hour_hand(self, window, hour, minute):
+		hand_width = 15
+		hand_length = self.__size * 0.6
+		angle = 30 * hour + (minute/60) * 30
+		self.__draw_hand(window, hand_width, hand_length, angle, DARK_GREY)
 
-	def _draw_hand(self, surface, hand_length, hand_width, angle, color, offset = 0):
-		self._rotation_surface.fill((0, 0, 0, 0))
-		rect_x = self._screen_width // 2
-		rect_y = self._screen_height // 2 - hand_width // 2
-		pygame.draw.rect(self._rotation_surface, color, (rect_x - offset, rect_y, hand_length, hand_width))
-		rotated_hand = pygame.transform.rotate(self._rotation_surface, -angle)
-		rotated_rect = rotated_hand.get_rect(center=self.position)
-		surface.blit(rotated_hand, rotated_rect.topleft)
+	def __draw_second_hand(self, window, second):
+		hand_width = 5
+		hand_length = self.__size * 1.05
+		angle = second * 6
+		self.__draw_hand(window, hand_width, hand_length, angle, "red", 55)

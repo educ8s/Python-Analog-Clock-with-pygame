@@ -1,28 +1,32 @@
 import pygame, sys
 from clock import AnalogClock
 
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 600
-
 pygame.init()
-background_color = (225, 239, 240)
 
-window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+WINDOW_WIDTH = 600
+WINDOW_HEIGHT = 600
+LIGHT_BLUE = (225, 239, 240)
+
+window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Analog Clock")
 
 clock = pygame.time.Clock()
-analog_clock = AnalogClock((300,300), 250, SCREEN_WIDTH, SCREEN_HEIGHT)
+analog_clock = AnalogClock(250, (300, 300), WINDOW_WIDTH, WINDOW_HEIGHT)
 
+#Main Loop
 while True:
+	# 1. Event Handling
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			pygame.quit()
 			sys.exit()
 
+	# 2. Updating State
 	analog_clock.update()
 
-	window.fill(background_color)
+	# 3. Drawing
+	window.fill(LIGHT_BLUE)
 	analog_clock.draw(window)
 
 	pygame.display.update()
-	clock.tick(60)
+	clock.tick(15)
