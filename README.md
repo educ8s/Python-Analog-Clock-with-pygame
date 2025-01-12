@@ -5,7 +5,7 @@ This repository contains the code for a video tutorial on creating a fully funct
 ## Video Tutorial
 
 <p align="center">
-  <img src="preview.jpg" alt="Analog Clock Preview" width="940">
+  <img src="preview.jpg" alt="Analog Clock Preview" width="960">
 </p>
 
 <p align="center">
